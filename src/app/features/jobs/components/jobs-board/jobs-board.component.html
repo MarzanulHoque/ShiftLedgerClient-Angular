@@ -1,0 +1,24 @@
+<div class="board" cdkDropListGroup>
+  @for (status of columns; track status) {
+    <div class="column" [style.border-top-color]="'var(--column-accent)'" [class]="'column--' + statusMeta[status].tone">
+      <div class="column-header">
+        <span class="column-title">{{ statusMeta[status].label }}</span>
+        <span class="badge" [class]="'badge--' + statusMeta[status].tone">{{ jobsFor(status).length }}</span>
+      </div>
+
+      <div
+        class="column-body"
+        cdkDropList
+        [id]="status"
+        [cdkDropListData]="jobsFor(status)"
+        (cdkDropListDropped)="onDrop($event)"
+      >
+        @for (job of jobsFor(status); track job.id) {
+          <app-job-card cdkDrag [cdkDragData]="job" [job]="job" />
+        } @empty {
+          <p class="empty">No jobs here</p>
+        }
+      </div>
+    </div>
+  }
+</div>

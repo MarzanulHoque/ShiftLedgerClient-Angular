@@ -1,0 +1,38 @@
+<div class="job-card" (click)="openJob()">
+  <div class="row title-row">
+    <span class="title">{{ job.title }}</span>
+    <span class="priority-dot" [class.priority-dot--high]="job.priority === 'High'"></span>
+  </div>
+  <div class="row">
+    <span class="bike-model">{{ job.bikeModel }}</span>
+    <span class="job-number">{{ jobNumber() }}</span>
+  </div>
+  <div class="row">
+    <span class="badge" [class.badge--danger]="due.overdue" [class.badge--neutral]="!due.overdue">{{ due.label }}</span>
+    @if (mechanicName) {
+      <span class="avatar" [matTooltip]="mechanicName!">{{ initialsFor(mechanicName!) }}</span>
+    }
+  </div>
+  @if (adjacent.back || adjacent.forward) {
+    <div class="row status-row">
+      <button
+        mat-icon-button
+        [disabled]="!adjacent.back"
+        (pointerdown)="$event.stopPropagation()"
+        (click)="moveBack($event)"
+        aria-label="Move back one status"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        [disabled]="!adjacent.forward"
+        (pointerdown)="$event.stopPropagation()"
+        (click)="moveForward($event)"
+        aria-label="Advance to next status"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  }
+</div>
