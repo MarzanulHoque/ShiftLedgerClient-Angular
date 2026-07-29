@@ -14,8 +14,8 @@ import { formatJobNumber } from '../../../shared/utils/identifiers.util';
 import { adjacentStatuses } from '../../../shared/utils/job-status-flow.util';
 import { STATUS_META } from '../../../shared/utils/status-meta';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { BillPanelComponent } from '../../billing/components/bill-panel/bill-panel.component';
 import { injectMechanics } from '../../users/data/users.queries';
-import { BillPanelPlaceholderComponent } from '../components/bill-panel-placeholder/bill-panel-placeholder.component';
 import { EditJobDialogComponent } from '../components/edit-job-dialog/edit-job-dialog.component';
 import { JobCommentsComponent } from '../components/job-comments/job-comments.component';
 import { JobHistoryComponent } from '../components/job-history/job-history.component';
@@ -37,7 +37,7 @@ import { injectJob } from '../data/jobs.queries';
     PriorityBadgeComponent,
     JobCommentsComponent,
     JobHistoryComponent,
-    BillPanelPlaceholderComponent,
+    BillPanelComponent,
   ],
   templateUrl: './job-detail.page.html',
   styleUrl: './job-detail.page.scss',

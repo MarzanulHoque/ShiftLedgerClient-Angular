@@ -1,0 +1,85 @@
+@if (!billQuery.isLoading()) {
+  <mat-card appearance="outlined">
+    @if (billQuery.data(); as bill) {
+      <mat-card-header>
+        <mat-card-title class="panel-title bill-title">
+          Bill <span class="bill-number">{{ formatBillNumber(bill.billNumber) }}</span>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="bill-status-row">
+          <span class="badge" [class]="bill.isPaid ? 'badge--success' : 'badge--neutral'">
+            {{ bill.isPaid ? 'Paid' + (bill.paidAtUtc ? ' ' + (bill.paidAtUtc | utcDateTime) : '') : 'Unpaid' }}
+          </span>
+          <button mat-icon-button (click)="download()" aria-label="Download invoice" title="Download invoice">
+            <mat-icon>download</mat-icon>
+          </button>
+        </div>
+
+        <table class="bill-lines">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="align-right">Qty</th>
+              <th class="align-right">Price</th>
+              <th class="align-right">Line</th>
+              <th class="line-actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (line of bill.lines; track line.id) {
+              <tr>
+                <td>{{ line.description }} <span class="dimmed">({{ line.type }})</span></td>
+                <td class="align-right">{{ line.quantity }}</td>
+                <td class="align-right">{{ money(line.unitPrice) }}</td>
+                <td class="align-right">{{ money(line.lineTotal) }}</td>
+                <td class="line-actions">
+                  @if (!bill.isPaid) {
+                    <button mat-icon-button (click)="openEditLineDialog(line)" aria-label="Edit line">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" (click)="confirmDeleteLine(line)" aria-label="Delete line">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+            @if (bill.lines.length === 0) {
+              <tr><td colspan="5" class="dimmed empty-note">No line items yet.</td></tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="bill-total-row">
+          <span class="bill-total-label">Total</span>
+          <span class="bill-total-value">{{ money(bill.total) }}</span>
+        </div>
+
+        <div class="bill-actions">
+          @if (!bill.isPaid) {
+            <button mat-stroked-button (click)="openAddLineDialog()">+ Add line</button>
+          }
+          <button
+            mat-flat-button
+            [color]="bill.isPaid ? undefined : 'primary'"
+            [disabled]="!bill.isPaid && bill.lines.length === 0"
+            (click)="confirmSetPaid(!bill.isPaid)"
+          >
+            {{ bill.isPaid ? 'Reopen' : 'Mark paid' }}
+          </button>
+        </div>
+      </mat-card-content>
+    } @else {
+      <mat-card-header>
+        <mat-card-title class="panel-title">Bill</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="history-meta">No bill has been started for this job yet.</p>
+        <button mat-flat-button color="primary" [disabled]="createBill.isPending()" (click)="startBill()">
+          Start bill
+        </button>
+      </mat-card-content>
+    }
+  </mat-card>
+}
