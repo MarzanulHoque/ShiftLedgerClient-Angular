@@ -1,0 +1,96 @@
+<div class="filters">
+  @if (isSuperAdmin) {
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Department: All</mat-label>
+      <mat-select [value]="departmentId" (selectionChange)="onDepartmentChange($event.value)">
+        <mat-option [value]="null">All</mat-option>
+        @for (d of departmentsQuery.data(); track d.id) {
+          <mat-option [value]="d.id">{{ d.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Status: All</mat-label>
+    <mat-select [value]="status()" (selectionChange)="onStatusChange($event.value)">
+      <mat-option [value]="null">All</mat-option>
+      @for (option of statusOptions; track option.value) {
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Mechanic: All</mat-label>
+    <mat-select [value]="mechanicId" (selectionChange)="onMechanicChange($event.value)">
+      <mat-option [value]="null">All</mat-option>
+      @for (m of mechanicsQuery.mechanics(); track m.id) {
+        <mat-option [value]="m.id">{{ m.fullName }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div class="table-wrapper">
+  <table mat-table [dataSource]="jobsList.data()?.items ?? []">
+    <ng-container matColumnDef="jobNumber">
+      <th mat-header-cell *matHeaderCellDef>Job #</th>
+      <td mat-cell *matCellDef="let job" class="mono">{{ formatJobNumber(job.jobNumber) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef>Title</th>
+      <td mat-cell *matCellDef="let job">{{ job.title }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="bikeModel">
+      <th mat-header-cell *matHeaderCellDef>Bike model</th>
+      <td mat-cell *matCellDef="let job">{{ job.bikeModel }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let job"><app-job-status-badge [status]="job.status" /></td>
+    </ng-container>
+
+    <ng-container matColumnDef="priority">
+      <th mat-header-cell *matHeaderCellDef>Priority</th>
+      <td mat-cell *matCellDef="let job"><app-priority-badge [priority]="job.priority" /></td>
+    </ng-container>
+
+    <ng-container matColumnDef="mechanic">
+      <th mat-header-cell *matHeaderCellDef>Mechanic</th>
+      <td mat-cell *matCellDef="let job">{{ mechanicName(job.assignedMechanicId) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="received">
+      <th mat-header-cell *matHeaderCellDef>Received</th>
+      <td mat-cell *matCellDef="let job" class="mono">{{ job.receivedDate | dateOnly }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="due">
+      <th mat-header-cell *matHeaderCellDef>Due</th>
+      <td mat-cell *matCellDef="let job" class="mono">{{ job.dueDate | dateOnly }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let job; columns: columns" (click)="openJob(job.id)" class="clickable-row"></tr>
+  </table>
+
+  @if (jobsList.isLoading()) {
+    <div class="loading"><mat-spinner diameter="32" /></div>
+  } @else if ((jobsList.data()?.items?.length ?? 0) === 0) {
+    <p class="empty">No jobs match these filters.</p>
+  }
+</div>
+
+@if (jobsList.data() && jobsList.data()!.totalCount > pageSize) {
+  <mat-paginator
+    [length]="jobsList.data()!.totalCount"
+    [pageSize]="pageSize"
+    [pageIndex]="page() - 1"
+    [hidePageSize]="true"
+    (page)="onPageEvent($event)"
+  />
+}
