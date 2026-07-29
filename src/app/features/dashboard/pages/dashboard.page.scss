@@ -1,0 +1,244 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dashboard-subtitle {
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant, #666);
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.section-title {
+  margin: 0.5rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.panel-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+
+  @media (min-width: 900px) {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.panel-row--three {
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.panel {
+  background: var(--mat-sys-surface-container-low, #fff);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel--wide {
+  min-width: 0;
+}
+
+.panel-heading {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--mat-sys-on-surface-variant, #666);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.heading-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--mat-sys-on-surface-variant, #666);
+}
+
+.empty-note {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--mat-sys-on-surface-variant, #666);
+  font-size: 0.875rem;
+}
+
+.footnote {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, #666);
+}
+
+.footnote--center {
+  text-align: center;
+}
+
+.panel-link {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--mat-sys-primary, #1f4a72);
+  cursor: pointer;
+}
+
+.mechanic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (min-width: 960px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.mechanic-card {
+  border: 1px solid var(--mat-sys-outline-variant, #ddd);
+  border-top: 3px solid #1f4a72;
+  border-radius: 0.5rem;
+  padding: 0.625rem;
+}
+
+.mechanic-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
+}
+
+.mechanic-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mechanic-count {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.mechanic-label {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, #666);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #1f4a72;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.avatar--sm {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.625rem;
+}
+
+.avatar--xs {
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.5625rem;
+  margin-right: 0.375rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant, #666);
+    padding: 0.375rem 0.5rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant, #ddd);
+  }
+
+  td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant, #eee);
+    vertical-align: middle;
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-variant, rgba(0, 0, 0, 0.03));
+  }
+}
+
+.disabled-row {
+  cursor: default;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.dimmed {
+  color: var(--mat-sys-on-surface-variant, #666);
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.danger-text {
+  color: #a3231f;
+}
+
+.success-text {
+  color: #1e6b39;
+}

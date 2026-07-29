@@ -1,0 +1,249 @@
+@if (dashboardQuery.isLoading() || !dashboardQuery.data()) {
+  <mat-spinner diameter="32" />
+} @else if (dashboardQuery.data(); as dashboard) {
+  <div class="dashboard">
+    <h2 class="page-title">Dashboard</h2>
+
+    <div class="dashboard-header">
+      <span class="dashboard-subtitle">{{ today }} — good morning, {{ greetingName }}</span>
+      <div class="dashboard-actions">
+        <button mat-stroked-button (click)="goToReports()">View reports</button>
+        <button mat-flat-button color="primary" (click)="goToNewJob()">+ New job</button>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <app-stat-tile
+        icon="calendar_today"
+        color="steel"
+        label="Jobs received today"
+        [value]="dashboard.jobsReceivedToday + ''"
+        [current]="dashboard.jobsReceivedToday"
+        [previous]="yesterdayQuery.data()?.jobsReceivedToday"
+        goodDirection="up"
+      />
+      <app-stat-tile
+        icon="assignment"
+        color="brand"
+        label="Open jobs"
+        [value]="openJobsToday + ''"
+        [current]="openJobsToday"
+        [previous]="yesterdayOpenJobs"
+        goodDirection="neutral"
+      />
+      <app-stat-tile
+        icon="receipt_long"
+        color="danger"
+        label="Unpaid bills"
+        [value]="dashboard.unpaidBills + ''"
+        [sub]="money(dashboard.unpaidTotal) + ' outstanding'"
+        [current]="dashboard.unpaidBills"
+        [previous]="yesterdayQuery.data()?.unpaidBills"
+        goodDirection="down"
+      />
+      <app-stat-tile
+        icon="receipt"
+        color="success"
+        label="Bills paid today"
+        [value]="dashboard.billsPaidToday + ''"
+        [current]="dashboard.billsPaidToday"
+        [previous]="yesterdayQuery.data()?.billsPaidToday"
+        goodDirection="up"
+      />
+      <app-stat-tile
+        icon="paid"
+        color="brand"
+        label="Revenue today"
+        [value]="money(dashboard.revenueToday)"
+        [current]="dashboard.revenueToday"
+        [previous]="yesterdayQuery.data()?.revenueToday"
+        goodDirection="up"
+      />
+    </div>
+
+    <div class="panel-row">
+      <div class="panel panel--wide">
+        <h3 class="panel-heading">Revenue — last 14 days</h3>
+        <app-area-chart [points]="revenueTrendPoints" [valueFormatter]="moneyFormatter" [labelFormatter]="formatTrendLabel" [height]="230" />
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-heading">Jobs by status</h3>
+        @if (openJobsToday > 0) {
+          <app-donut-chart [segments]="statusDonutSegments" />
+        } @else {
+          <p class="empty-note">No open jobs.</p>
+        }
+        <p class="footnote">+ {{ deliveredCount }} delivered (out of the active view above)</p>
+        <a class="panel-link" (click)="goToJobsBoard()">View board →</a>
+      </div>
+    </div>
+
+    @if (isSuperAdmin && comparisonQuery.data(); as comparison) {
+      @if (comparison.length > 0) {
+        <h3 class="section-title">Department comparison</h3>
+        <div class="panel-row panel-row--three">
+          <div class="panel">
+            <h3 class="panel-heading">Jobs by department</h3>
+            @if (hasPositive(departmentJobsSegments)) {
+              <app-donut-chart [segments]="departmentJobsSegments" />
+            } @else {
+              <p class="empty-note">No open jobs.</p>
+            }
+            <p class="footnote footnote--center">{{ departmentReceivedTodayTotal }} received today across departments</p>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-heading">Revenue by department</h3>
+            @if (hasPositive(departmentRevenueSegments)) {
+              <app-donut-chart [segments]="departmentRevenueSegments" />
+            } @else {
+              <p class="empty-note">No revenue today.</p>
+            }
+            <p class="footnote footnote--center">{{ money(departmentUnpaidTotal) }} unpaid across departments</p>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-heading">Throughput — completed, last 7 days</h3>
+            @if (hasPositive(departmentThroughputSegments)) {
+              <app-donut-chart [segments]="departmentThroughputSegments" />
+            } @else {
+              <p class="empty-note">Nothing completed in the last 7 days.</p>
+            }
+          </div>
+        </div>
+      }
+    }
+
+    <div class="panel">
+      <h3 class="panel-heading">Mechanic workload</h3>
+      @if (mechanicWorkloadSorted().length > 0) {
+        <div class="mechanic-grid">
+          @for (mechanic of mechanicWorkloadSorted(); track mechanic.mechanicId) {
+            <div class="mechanic-card">
+              <div class="mechanic-card-head">
+                <span class="avatar avatar--sm">{{ initialsFor(mechanic.mechanicName) }}</span>
+                <span class="mechanic-name">{{ mechanic.mechanicName }}</span>
+              </div>
+              <div class="mechanic-count">{{ mechanic.openJobs }}</div>
+              <div class="mechanic-label">open jobs</div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty-note">No mechanics assigned yet.</p>
+      }
+    </div>
+
+    <h3 class="section-title">Details</h3>
+
+    <div class="panel">
+      <h3 class="panel-heading">Due soon</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Job</th>
+            <th>Mechanic</th>
+            <th class="align-right">Due</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (job of dueSoonQuery.data(); track job.id) {
+            <tr class="clickable-row" (click)="goToJob(job.id)">
+              <td>{{ job.title }} <span class="dimmed">{{ job.bikeModel }}</span></td>
+              <td>
+                @if (mechanicNameFor(job.assignedMechanicId); as name) {
+                  <span class="avatar avatar--xs">{{ initialsFor(name) }}</span> {{ name }}
+                } @else {
+                  <span class="dimmed">Unassigned</span>
+                }
+              </td>
+              <td class="align-right" [class.danger-text]="dueChipFor(job.dueDate).overdue">{{ dueChipFor(job.dueDate).label }}</td>
+            </tr>
+          }
+          @if (dueSoonQuery.data()?.length === 0) {
+            <tr><td colspan="3" class="dimmed">Nothing due soon.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel-row">
+      <div class="panel">
+        <h3 class="panel-heading">Unpaid bills — top {{ unpaidBillsQuery.data()?.rows?.length ?? 0 }}</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Job</th>
+              <th class="align-right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of unpaidBillsQuery.data()?.rows; track row.billId) {
+              <tr>
+                <td>{{ row.title }} <span class="dimmed">{{ row.bikeModel }}</span></td>
+                <td class="align-right danger-text bold">{{ money(row.total) }}</td>
+              </tr>
+            }
+            @if (unpaidBillsQuery.data()?.rows?.length === 0) {
+              <tr><td colspan="2" class="dimmed">No unpaid bills.</td></tr>
+            }
+          </tbody>
+        </table>
+        <a class="panel-link" (click)="goToBills()">View all {{ unpaidBillsQuery.data()?.totalCount ?? 0 }} →</a>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-heading">Recent payments</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Job</th>
+              <th>Paid</th>
+              <th class="align-right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (payment of recentPaymentsQuery.data(); track payment.billId) {
+              <tr class="clickable-row" [class.disabled-row]="payment.jobDeleted" (click)="!payment.jobDeleted && goToJob(payment.jobId)">
+                <td [class.dimmed]="payment.jobDeleted">{{ payment.title }} <span class="dimmed">{{ payment.bikeModel }}</span></td>
+                <td class="dimmed">{{ timeAgoFor(payment.paidAtUtc) }}</td>
+                <td class="align-right success-text bold">{{ money(payment.total) }}</td>
+              </tr>
+            }
+            @if (recentPaymentsQuery.data()?.length === 0) {
+              <tr><td colspan="3" class="dimmed">No payments yet.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    @if (isSuperAdmin && comparisonQuery.data(); as comparison) {
+      @if (comparison.length > 0) {
+        <div class="panel">
+          <h3 class="panel-heading"><mat-icon inline class="heading-icon">bolt</mat-icon> Live activity — all departments</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Message</th>
+                <th class="align-right">When</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (n of notificationsQuery.data()?.items; track n.id) {
+                <tr>
+                  <td>{{ n.message }}</td>
+                  <td class="align-right dimmed">{{ timeAgoFor(n.createdAtUtc) }}</td>
+                </tr>
+              }
+              @if (notificationsQuery.data()?.items?.length === 0) {
+                <tr><td colspan="2" class="dimmed">No recent activity.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  </div>
+}

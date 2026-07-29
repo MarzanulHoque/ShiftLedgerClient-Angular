@@ -15,10 +15,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
-        loadComponent: () =>
-          import('./shared/components/feature-placeholder/feature-placeholder.component').then(
-            (m) => m.FeaturePlaceholderComponent,
-          ),
+        loadComponent: () => import('./features/dashboard/pages/dashboard.page').then((m) => m.DashboardPage),
         data: { title: 'Dashboard' },
       },
       {
