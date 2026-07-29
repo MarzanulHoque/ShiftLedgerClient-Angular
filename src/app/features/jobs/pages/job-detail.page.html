@@ -1,0 +1,77 @@
+@if (jobQuery.isLoading()) {
+  <div class="loading"><mat-spinner diameter="32" /></div>
+} @else if (jobQuery.data(); as job) {
+  <div class="detail-header">
+    <div>
+      <h2>{{ job.title }} <span class="bike-model">— {{ job.bikeModel }}</span></h2>
+      <div class="badges">
+        <span class="job-number">{{ jobNumber(job.jobNumber) }}</span>
+        <app-job-status-badge [status]="job.status" />
+        <app-priority-badge [priority]="job.priority" />
+      </div>
+    </div>
+    <div class="actions">
+      <button mat-stroked-button (click)="openEditDialog()">Edit</button>
+      <button mat-stroked-button color="warn" (click)="confirmDelete()">Delete</button>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="detail-main">
+      <div class="panel">
+        <h3 class="panel-title">Job</h3>
+
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <div class="status-buttons">
+            @let move = adjacent(job.status);
+            <button mat-stroked-button [disabled]="!move.back" (click)="move.back && changeStatus.mutate(move.back)">
+              ← {{ move.back ? statusMeta[move.back].label : '' }}
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="!move.forward"
+              (click)="move.forward && changeStatus.mutate(move.forward)"
+            >
+              {{ move.forward ? statusMeta[move.forward].label : '' }} →
+            </button>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Mechanic</span>
+          <mat-form-field appearance="outline" class="mechanic-select">
+            <mat-select [value]="job.assignedMechanicId" (selectionChange)="onAssignMechanic($event.value)">
+              <mat-option [value]="null">Unassigned</mat-option>
+              @for (m of mechanicsQuery.mechanics(); track m.id) {
+                <mat-option [value]="m.id">{{ m.fullName }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Received / Due</span>
+          <span class="mono">{{ job.receivedDate | dateOnly }} / {{ job.dueDate | dateOnly }}</span>
+        </div>
+
+        @if (job.description) {
+          <p class="description">{{ job.description }}</p>
+        }
+      </div>
+
+      <app-job-comments [jobId]="job.id" />
+
+      @if (isAdmin) {
+        <app-job-history [jobId]="job.id" />
+      }
+    </div>
+
+    <div class="detail-side">
+      <app-bill-panel-placeholder [jobId]="job.id" />
+    </div>
+  </div>
+} @else {
+  <p class="not-found">Job not found.</p>
+}
