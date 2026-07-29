@@ -1,4 +1,4 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, OnDestroy, OnInit, effect } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -8,8 +8,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 
 import { AuthSessionService } from '../../../core/auth/auth-session.service';
+import { NotificationsHubService } from '../../../core/realtime/notifications-hub.service';
 import { initials } from '../../utils/initials.util';
 import { MechanicPlaceholderComponent } from '../mechanic-placeholder/mechanic-placeholder.component';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
 interface NavItem {
   path: string;
@@ -39,16 +41,18 @@ const NAV_ITEMS: NavItem[] = [
     MatMenuModule,
     MatButtonModule,
     MechanicPlaceholderComponent,
+    NotificationBellComponent,
   ],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
 })
-export class AppShellComponent implements OnInit {
+export class AppShellComponent implements OnInit, OnDestroy {
   readonly navItems = NAV_ITEMS;
 
   constructor(
     readonly session: AuthSessionService,
     private readonly router: Router,
+    private readonly notificationsHub: NotificationsHubService,
   ) {
     // A valid accessToken but no decoded user means the token's claims didn't parse as expected
     // (see core/auth/jwt.util.ts) — that's a broken session, not a legitimate mechanic one, so
@@ -63,7 +67,13 @@ export class AppShellComponent implements OnInit {
   ngOnInit(): void {
     if (!this.session.isAuthenticated()) {
       void this.router.navigateByUrl('/login');
+      return;
     }
+    this.notificationsHub.connect();
+  }
+
+  ngOnDestroy(): void {
+    this.notificationsHub.disconnect();
   }
 
   initialsFor(email: string): string {
@@ -71,6 +81,7 @@ export class AppShellComponent implements OnInit {
   }
 
   logout(): void {
+    this.notificationsHub.disconnect();
     this.session.clearSession();
     void this.router.navigateByUrl('/login');
   }

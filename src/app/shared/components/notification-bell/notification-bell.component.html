@@ -1,0 +1,18 @@
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Notifications" [matBadge]="unreadCount() || null" matBadgeColor="warn" matBadgeSize="small">
+  <mat-icon>notifications</mat-icon>
+</button>
+
+<mat-menu #menu="matMenu" class="notification-menu">
+  @if (!notificationsQuery.data()?.items?.length) {
+    <p class="empty">No notifications yet.</p>
+  } @else {
+    @for (n of notificationsQuery.data()!.items; track n.id) {
+      <button mat-menu-item (click)="onSelect(n.id)" [class.unread]="!n.isRead">
+        <div class="notification-item">
+          <span class="message">{{ n.message }}</span>
+          <span class="timestamp">{{ n.createdAtUtc | utcDateTime }}</span>
+        </div>
+      </button>
+    }
+  }
+</mat-menu>

@@ -18,6 +18,7 @@
         <mat-toolbar color="primary" class="shell-toolbar">
           <span class="brand">ShiftLedger</span>
           <span class="spacer"></span>
+          <app-notification-bell />
           <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Account menu">
             <span class="avatar">{{ initialsFor(user.email) }}</span>
           </button>
