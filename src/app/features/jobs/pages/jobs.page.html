@@ -1,0 +1,72 @@
+<div class="page-header">
+  <h2>Jobs</h2>
+  <button mat-flat-button color="primary" (click)="openCreateDialog()">+ New job</button>
+</div>
+
+<div class="toolbar">
+  <mat-button-toggle-group [value]="view()" (change)="view.set($event.value)">
+    <mat-button-toggle value="board">Board</mat-button-toggle>
+    <mat-button-toggle value="list">List</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  @if (view() === 'board') {
+    <div class="filters">
+      @if (isSuperAdmin) {
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Department: All</mat-label>
+          <mat-select [value]="departmentId()" (selectionChange)="departmentId.set($event.value)">
+            <mat-option [value]="null">All</mat-option>
+            @for (d of departmentsQuery.data(); track d.id) {
+              <mat-option [value]="d.id">{{ d.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Priority: All</mat-label>
+        <mat-select [value]="priority()" (selectionChange)="priority.set($event.value)">
+          <mat-option [value]="null">All</mat-option>
+          @for (p of priorities; track p) {
+            <mat-option [value]="p">{{ p }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Due: All</mat-label>
+        <mat-select [value]="dueFilter()" (selectionChange)="dueFilter.set($event.value)">
+          <mat-option [value]="null">All</mat-option>
+          <mat-option value="overdue">Overdue</mat-option>
+          <mat-option value="soon">Due soon</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Mechanic: All</mat-label>
+        <mat-select [value]="mechanicId()" (selectionChange)="mechanicId.set($event.value)">
+          <mat-option [value]="null">All</mat-option>
+          @for (m of mechanicsQuery.mechanics(); track m.id) {
+            <mat-option [value]="m.id">{{ m.fullName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  }
+</div>
+
+@if (view() === 'board') {
+  @if (!boardQuery.isLoading()) {
+    <app-jobs-board [jobs]="boardItems()" />
+  } @else {
+    <div class="loading"><mat-spinner diameter="32" /></div>
+  }
+} @else {
+  <app-jobs-list
+    [isSuperAdmin]="isSuperAdmin"
+    [mechanicId]="mechanicId()"
+    [departmentId]="departmentId()"
+    (mechanicIdChange)="mechanicId.set($event)"
+    (departmentIdChange)="departmentId.set($event)"
+  />
+}
