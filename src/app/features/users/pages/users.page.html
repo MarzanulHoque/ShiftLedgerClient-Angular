@@ -1,0 +1,21 @@
+<div class="page-header">
+  <h2>Users &amp; Departments</h2>
+  <mat-button-toggle-group [value]="tab()" (change)="tab.set($event.value)">
+    <mat-button-toggle value="users">Users</mat-button-toggle>
+    <mat-button-toggle value="departments">Departments</mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+
+@if (tab() === 'users') {
+  <div class="stat-grid">
+    <app-stat-tile icon="shield" color="brand" label="Admins" [value]="adminCount + ''" />
+    <app-stat-tile icon="build" color="steel" label="Mechanics" [value]="mechanicCount + ''" />
+    <app-stat-tile icon="group" color="success" label="Active accounts" [value]="activeCount + ''" />
+  </div>
+  <app-users-table />
+} @else {
+  <div class="stat-grid">
+    <app-stat-tile icon="business" color="steel" label="Departments" [value]="departmentCount + ''" />
+  </div>
+  <app-departments-table />
+}

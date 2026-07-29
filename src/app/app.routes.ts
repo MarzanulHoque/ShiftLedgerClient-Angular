@@ -37,10 +37,7 @@ export const routes: Routes = [
       },
       {
         path: 'users',
-        loadComponent: () =>
-          import('./shared/components/feature-placeholder/feature-placeholder.component').then(
-            (m) => m.FeaturePlaceholderComponent,
-          ),
+        loadComponent: () => import('./features/users/pages/users.page').then((m) => m.UsersPage),
         data: { title: 'Users & Org' },
       },
     ],
