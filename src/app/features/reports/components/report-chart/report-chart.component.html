@@ -1,0 +1,34 @@
+@if (hasData) {
+  @switch (type) {
+    @case ('Jobs') {
+      <div class="chart-panel">
+        <h3 class="chart-title">Jobs by status</h3>
+        <app-bar-chart [items]="jobsByStatus" [valueFormatter]="count" [height]="220" />
+      </div>
+    }
+    @case ('Revenue') {
+      <div class="chart-panel">
+        <h3 class="chart-title">Revenue by day</h3>
+        <app-area-chart [points]="revenuePoints" [valueFormatter]="money" [labelFormatter]="dateLabel" [height]="240" />
+      </div>
+    }
+    @case ('UnpaidBills') {
+      <div class="chart-panel">
+        <h3 class="chart-title">{{ unpaidBillsChartTitle }}</h3>
+        <app-bar-chart orientation="horizontal" [items]="unpaidBillsTop" [valueFormatter]="money" />
+      </div>
+    }
+    @case ('BillingHistory') {
+      <div class="chart-panel">
+        <h3 class="chart-title">Billed per day — paid vs unpaid</h3>
+        <app-bar-chart [items]="billingHistoryByDay" [legend]="billingHistoryLegend" [valueFormatter]="money" [height]="240" />
+      </div>
+    }
+    @case ('MechanicProductivity') {
+      <div class="chart-panel">
+        <h3 class="chart-title">Mechanic productivity</h3>
+        <app-bar-chart orientation="horizontal" [items]="mechanicProductivity" [legend]="mechanicProductivityLegend" [valueFormatter]="count" />
+      </div>
+    }
+  }
+}
