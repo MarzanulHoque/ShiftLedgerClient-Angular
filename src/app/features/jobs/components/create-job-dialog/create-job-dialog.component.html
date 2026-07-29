@@ -1,0 +1,74 @@
+<h2 mat-dialog-title>New job</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="job-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      @if (form.controls.title.invalid && form.controls.title.touched) {
+        <mat-error>Title is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Bike model</mat-label>
+      <input matInput formControlName="bikeModel" />
+      @if (form.controls.bikeModel.invalid && form.controls.bikeModel.touched) {
+        <mat-error>Bike model is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="2"></textarea>
+    </mat-form-field>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Department</mat-label>
+        <mat-select formControlName="departmentId">
+          @for (d of departmentsQuery.data(); track d.id) {
+            <mat-option [value]="d.id">{{ d.name }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.departmentId.invalid && form.controls.departmentId.touched) {
+          <mat-error>Department is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Priority</mat-label>
+        <mat-select formControlName="priority">
+          @for (p of priorities; track p) {
+            <mat-option [value]="p">{{ p }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Assign mechanic</mat-label>
+      <mat-select formControlName="assignedMechanicId">
+        <mat-option [value]="null">Unassigned</mat-option>
+        @for (m of departmentMechanics(); track m.id) {
+          <mat-option [value]="m.id">{{ m.fullName }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="field-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Received</mat-label>
+        <input matInput type="date" formControlName="receivedDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Due</mat-label>
+        <input matInput type="date" formControlName="dueDate" />
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="createJob.isPending()" (click)="submit()">Create job</button>
+</mat-dialog-actions>
