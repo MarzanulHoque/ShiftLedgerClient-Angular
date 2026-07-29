@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { Signal, inject } from '@angular/core';
 import { QueryClient, injectMutation, injectQueryClient } from '@tanstack/angular-query-experimental';
 import { firstValueFrom } from 'rxjs';
 
@@ -19,12 +19,15 @@ export function injectCreateJobMutation() {
   }));
 }
 
-export function injectUpdateJobMutation(id: string) {
+// `id` is a signal (not a plain string) because these injectors are called from component field
+// initializers — before Angular has set that component's @Input/route-derived id — so the
+// mutationFn must read id() lazily at call time, not close over its value at inject time.
+export function injectUpdateJobMutation(id: Signal<string>) {
   const api = inject(JobsApi);
   const queryClient = injectQueryClient();
   return injectMutation(() => ({
-    mutationFn: (request: UpdateJobRequest) => firstValueFrom(api.updateJob(id, request)),
-    onSuccess: () => invalidateJob(queryClient, id),
+    mutationFn: (request: UpdateJobRequest) => firstValueFrom(api.updateJob(id(), request)),
+    onSuccess: () => invalidateJob(queryClient, id()),
   }));
 }
 
@@ -37,12 +40,12 @@ export function injectDeleteJobMutation() {
   }));
 }
 
-export function injectChangeJobStatusMutation(id: string) {
+export function injectChangeJobStatusMutation(id: Signal<string>) {
   const api = inject(JobsApi);
   const queryClient = injectQueryClient();
   return injectMutation(() => ({
-    mutationFn: (newStatus: JobStatus) => firstValueFrom(api.changeJobStatus(id, newStatus)),
-    onSuccess: () => invalidateJob(queryClient, id),
+    mutationFn: (newStatus: JobStatus) => firstValueFrom(api.changeJobStatus(id(), newStatus)),
+    onSuccess: () => invalidateJob(queryClient, id()),
   }));
 }
 
@@ -57,20 +60,20 @@ export function injectChangeAnyJobStatusMutation() {
   }));
 }
 
-export function injectAssignMechanicMutation(id: string) {
+export function injectAssignMechanicMutation(id: Signal<string>) {
   const api = inject(JobsApi);
   const queryClient = injectQueryClient();
   return injectMutation(() => ({
-    mutationFn: (mechanicId: string) => firstValueFrom(api.assignMechanic(id, mechanicId)),
-    onSuccess: () => invalidateJob(queryClient, id),
+    mutationFn: (mechanicId: string) => firstValueFrom(api.assignMechanic(id(), mechanicId)),
+    onSuccess: () => invalidateJob(queryClient, id()),
   }));
 }
 
-export function injectAddJobCommentMutation(id: string) {
+export function injectAddJobCommentMutation(id: Signal<string>) {
   const api = inject(JobsApi);
   const queryClient = injectQueryClient();
   return injectMutation(() => ({
-    mutationFn: (body: string) => firstValueFrom(api.addJobComment(id, body)),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['jobs', id, 'comments'] }),
+    mutationFn: (body: string) => firstValueFrom(api.addJobComment(id(), body)),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['jobs', id(), 'comments'] }),
   }));
 }
