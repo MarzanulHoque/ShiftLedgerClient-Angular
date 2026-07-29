@@ -1,0 +1,17 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title class="panel-title">History</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="history-list">
+      @for (entry of historyQuery.data(); track $index) {
+        <div>
+          <p class="history-action">{{ entry.action }}</p>
+          <p class="history-meta">by {{ changedByName(entry.changedById) }} · {{ entry.changedAtUtc | utcDateTime }}</p>
+        </div>
+      } @empty {
+        <p class="history-meta">No history yet.</p>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>

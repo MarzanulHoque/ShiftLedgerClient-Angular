@@ -1,0 +1,25 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title class="panel-title">Comments</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="comment-list">
+      @for (comment of commentsQuery.data(); track comment.id) {
+        <div class="comment">
+          <p class="comment-body">{{ comment.body }}</p>
+          <p class="comment-meta">{{ authorName(comment.authorId) }} · {{ comment.createdAtUtc | utcDateTime }}</p>
+        </div>
+      } @empty {
+        <p class="comment-meta">No comments yet.</p>
+      }
+    </div>
+
+    <mat-form-field appearance="outline" class="comment-input">
+      <mat-label>Add a comment…</mat-label>
+      <textarea matInput rows="2" [ngModel]="draft()" (ngModelChange)="draft.set($event)"></textarea>
+    </mat-form-field>
+    <button mat-flat-button color="primary" [disabled]="!draft().trim() || addComment.isPending()" (click)="submit()">
+      Post comment
+    </button>
+  </mat-card-content>
+</mat-card>
