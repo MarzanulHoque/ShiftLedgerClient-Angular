@@ -1,0 +1,59 @@
+.shell-container {
+  height: 100vh;
+}
+
+.shell-nav {
+  width: 240px;
+  background: #1a2233;
+  color: #cdd6e6;
+
+  ::ng-deep .mdc-list-item__primary-text,
+  ::ng-deep .mat-icon {
+    color: #cdd6e6;
+  }
+
+  ::ng-deep .active-link {
+    background: rgba(255, 255, 255, 0.08);
+
+    .mdc-list-item__primary-text,
+    .mat-icon {
+      color: #fff;
+    }
+  }
+}
+
+.shell-toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.menu-email {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, #666);
+}
+
+.shell-main {
+  padding: 1.5rem;
+}

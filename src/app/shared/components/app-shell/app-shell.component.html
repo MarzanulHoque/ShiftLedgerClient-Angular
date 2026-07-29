@@ -1,0 +1,39 @@
+@if (session.user(); as user) {
+  @if (user.role === 'Employee') {
+    <app-mechanic-placeholder />
+  } @else {
+    <mat-sidenav-container class="shell-container">
+      <mat-sidenav mode="side" opened class="shell-nav">
+        <mat-nav-list>
+          @for (item of navItems; track item.path) {
+            <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link">
+              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+              <span matListItemTitle>{{ item.label }}</span>
+            </a>
+          }
+        </mat-nav-list>
+      </mat-sidenav>
+
+      <mat-sidenav-content>
+        <mat-toolbar color="primary" class="shell-toolbar">
+          <span class="brand">ShiftLedger</span>
+          <span class="spacer"></span>
+          <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Account menu">
+            <span class="avatar">{{ initialsFor(user.email) }}</span>
+          </button>
+          <mat-menu #userMenu="matMenu">
+            <div class="menu-email">{{ user.email }}</div>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Log out</span>
+            </button>
+          </mat-menu>
+        </mat-toolbar>
+
+        <main class="shell-main">
+          <router-outlet />
+        </main>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  }
+}
