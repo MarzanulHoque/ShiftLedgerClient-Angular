@@ -1,8 +1,8 @@
 import { HttpParams } from '@angular/common/http';
 
-export function toHttpParams(params: Record<string, string | number | boolean | null | undefined>): HttpParams {
+export function toHttpParams<T extends object>(params: T): HttpParams {
   let httpParams = new HttpParams();
-  for (const [key, value] of Object.entries(params)) {
+  for (const [key, value] of Object.entries(params) as Array<[string, unknown]>) {
     if (value === null || value === undefined || value === '') {
       continue;
     }
