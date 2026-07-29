@@ -1,0 +1,49 @@
+@if (orientation === 'vertical') {
+  <div class="bar-chart bar-chart--vertical" [style.height.px]="height">
+    @for (item of items; track item.label) {
+      <div class="bar-col">
+        <div class="bar-plot">
+          <div class="bar-stack" [style.height.%]="stackSizePercent(item)" [title]="tooltipFor(item)">
+            @for (seg of item.segments; track $index) {
+              @if (seg.value > 0) {
+                <div class="bar-seg" [style.flex-grow]="seg.value" [style.background]="seg.color"></div>
+              }
+            }
+          </div>
+        </div>
+        <span class="bar-label">{{ item.label }}</span>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="bar-chart bar-chart--horizontal">
+    @for (item of items; track item.label) {
+      <div class="hbar-row">
+        <span class="hbar-label" [title]="item.label">{{ item.label }}</span>
+        <div class="hbar-track">
+          <div class="hbar-stack" [style.width.%]="stackSizePercent(item)" [title]="tooltipFor(item)">
+            @for (seg of item.segments; track $index) {
+              @if (seg.value > 0) {
+                <div class="hbar-seg" [style.flex-grow]="seg.value" [style.background]="seg.color"></div>
+              }
+            }
+          </div>
+          @if (totalOf(item) > 0) {
+            <span class="hbar-total">{{ valueFormatter(totalOf(item)) }}</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@if (legend?.length) {
+  <div class="chart-legend">
+    @for (entry of legend; track entry.label) {
+      <span class="legend-item">
+        <span class="dot" [style.background]="entry.color"></span>
+        {{ entry.label }}
+      </span>
+    }
+  </div>
+}
