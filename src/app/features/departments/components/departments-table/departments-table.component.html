@@ -1,0 +1,40 @@
+@if (isSuperAdmin) {
+  <div class="toolbar">
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">+ New department</button>
+  </div>
+}
+
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th class="actions-col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (department of departmentsQuery.data(); track department.id) {
+        <tr>
+          <td>{{ department.name }}</td>
+          <td class="actions-col">
+            @if (isSuperAdmin) {
+              <button mat-icon-button (click)="openEditDialog(department)" aria-label="Edit department">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="confirmDelete(department)" aria-label="Delete department">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </tr>
+      }
+      @if (departmentsQuery.data()?.length === 0) {
+        <tr><td colspan="2" class="dimmed empty-note">No departments yet.</td></tr>
+      }
+    </tbody>
+  </table>
+
+  @if (departmentsQuery.isLoading()) {
+    <div class="loading"><mat-spinner diameter="32" /></div>
+  }
+</div>

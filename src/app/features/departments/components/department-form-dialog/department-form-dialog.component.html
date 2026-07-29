@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit department' : 'New department' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="job-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+      @if (form.controls.name.invalid && form.controls.name.touched) {
+        <mat-error>Name is required</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="saving()" (click)="submit()">Save</button>
+</mat-dialog-actions>
