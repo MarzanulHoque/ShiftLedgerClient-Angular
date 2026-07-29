@@ -49,8 +49,8 @@ export class JobsApi {
     return this.http.put<void>(`/jobs/${id}`, request);
   }
 
-  deleteJob(id: string, rowVersion: string): Observable<void> {
-    return this.http.delete<void>(`/jobs/${id}`, { body: { rowVersion } });
+  deleteJob(id: string, rowVersion?: string): Observable<void> {
+    return this.http.delete<void>(`/jobs/${id}`, { body: rowVersion ? { rowVersion } : undefined });
   }
 
   changeJobStatus(id: string, newStatus: JobStatus): Observable<void> {

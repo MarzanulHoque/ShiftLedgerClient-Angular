@@ -14,10 +14,13 @@ export interface JobDto {
   assignedMechanicId: string | null;
   receivedDate: string;
   dueDate: string | null;
-  // Beyond the React app's JobDto (which omits this despite the API's optimistic-concurrency
-  // design) — a confirmed improvement so updates/deletes can surface a real 409 instead of
-  // silently overwriting a stale record. See docs/15_Angular_Client.md.
-  rowVersion: string;
+  // Beyond the React app's JobDto (which omits this field). Optional, not required: the live
+  // ShiftLedger-API's GetJobs/GetJob/UpdateJob/DeleteJob handlers do not implement rowVersion for
+  // Jobs at all (verified against the running API — no RowVersion param, no concurrency check),
+  // despite the general convention described in docs/04_API_Specification.md §1. Typed as
+  // optional so the client is forward-compatible if the backend adds it later, without lying
+  // about what the API returns today. See docs/15_Angular_Client.md.
+  rowVersion?: string;
 }
 
 export interface JobCommentDto {
@@ -61,5 +64,5 @@ export interface UpdateJobRequest {
   bikeModel: string;
   priority: JobPriority;
   dueDate?: string | null;
-  rowVersion: string;
+  rowVersion?: string;
 }

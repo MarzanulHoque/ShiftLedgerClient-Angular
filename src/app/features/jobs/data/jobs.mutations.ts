@@ -35,7 +35,7 @@ export function injectDeleteJobMutation() {
   const api = inject(JobsApi);
   const queryClient = injectQueryClient();
   return injectMutation(() => ({
-    mutationFn: ({ id, rowVersion }: { id: string; rowVersion: string }) => firstValueFrom(api.deleteJob(id, rowVersion)),
+    mutationFn: ({ id, rowVersion }: { id: string; rowVersion?: string }) => firstValueFrom(api.deleteJob(id, rowVersion)),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['jobs'] }),
   }));
 }
