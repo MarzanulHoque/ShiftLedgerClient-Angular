@@ -1,0 +1,46 @@
+<div class="toolbar">
+  <button mat-flat-button color="primary" (click)="openCreateDialog()">+ New user</button>
+</div>
+
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Department</th>
+        <th>Active</th>
+        <th class="actions-col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of usersQuery.data(); track user.id) {
+        <tr>
+          <td>{{ user.fullName }}</td>
+          <td>{{ user.email }}</td>
+          <td><span class="badge" [class]="'badge--' + roleTone[user.role]">{{ roleLabel[user.role] }}</span></td>
+          <td>{{ departmentName(user.departmentId) }}</td>
+          <td><span class="badge" [class]="user.isActive ? 'badge--success' : 'badge--neutral'">{{ user.isActive ? 'Active' : 'Inactive' }}</span></td>
+          <td class="actions-col">
+            @if (canManage(user)) {
+              <button mat-icon-button (click)="openEditDialog(user)" aria-label="Edit user">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="confirmDelete(user)" aria-label="Delete user">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </tr>
+      }
+      @if (usersQuery.data()?.length === 0) {
+        <tr><td colspan="6" class="dimmed empty-note">No users yet.</td></tr>
+      }
+    </tbody>
+  </table>
+
+  @if (usersQuery.isLoading()) {
+    <div class="loading"><mat-spinner diameter="32" /></div>
+  }
+</div>
