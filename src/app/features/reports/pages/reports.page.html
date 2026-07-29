@@ -1,0 +1,80 @@
+<h2 class="page-title">Reports</h2>
+
+<mat-button-toggle-group class="type-toggle" [value]="type()" (change)="onTypeChange($event.value)">
+  @for (t of reportTypes; track t.value) {
+    <mat-button-toggle [value]="t.value">{{ t.label }}</mat-button-toggle>
+  }
+</mat-button-toggle-group>
+
+<div class="toolbar">
+  <div class="filters">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>From</mat-label>
+      <input matInput type="date" [value]="from() ?? ''" (change)="onFromChange($event)" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>To</mat-label>
+      <input matInput type="date" [value]="to() ?? ''" (change)="onToChange($event)" />
+    </mat-form-field>
+
+    @if (showMechanicFilter) {
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Mechanic: All</mat-label>
+        <mat-select [value]="mechanicId()" (selectionChange)="mechanicId.set($event.value)">
+          <mat-option [value]="null">All</mat-option>
+          @for (m of mechanicsQuery.mechanics(); track m.id) {
+            <mat-option [value]="m.id">{{ m.fullName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    @if (showStatusFilter) {
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Status: All</mat-label>
+        <mat-select [value]="status()" (selectionChange)="status.set($event.value)">
+          <mat-option [value]="null">All</mat-option>
+          @for (option of statusOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+  </div>
+
+  <div class="export-actions">
+    <button mat-stroked-button (click)="download('pdf')">Export PDF</button>
+    <button mat-stroked-button (click)="download('excel')">Export Excel</button>
+  </div>
+</div>
+
+@if (reportQuery.isLoading() || !reportQuery.data()) {
+  <div class="loading"><mat-spinner diameter="32" /></div>
+} @else if (reportQuery.data(); as report) {
+  <app-report-chart [type]="type()" [report]="report" [currencyCode]="orgSettingsQuery.data()?.currencyCode" />
+
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          @for (column of report.columns; track column) {
+            <th>{{ column }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of report.rows; track $index) {
+          <tr>
+            @for (cell of row; track $index) {
+              <td class="mono">{{ formatCell(cell, $index) }}</td>
+            }
+          </tr>
+        }
+        @if (report.rows.length === 0) {
+          <tr><td [attr.colspan]="report.columns.length" class="dimmed empty-note">No data for these filters.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

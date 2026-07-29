@@ -29,10 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        loadComponent: () =>
-          import('./shared/components/feature-placeholder/feature-placeholder.component').then(
-            (m) => m.FeaturePlaceholderComponent,
-          ),
+        loadComponent: () => import('./features/reports/pages/reports.page').then((m) => m.ReportsPage),
         data: { title: 'Reports' },
       },
       {
