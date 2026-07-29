@@ -11,4 +11,16 @@ export class DepartmentsApi {
   getDepartments(): Observable<DepartmentDto[]> {
     return this.http.get<DepartmentDto[]>('/departments');
   }
+
+  createDepartment(name: string): Observable<string> {
+    return this.http.post<string>('/departments', { name });
+  }
+
+  updateDepartment(id: string, name: string): Observable<void> {
+    return this.http.put<void>(`/departments/${id}`, { id, name });
+  }
+
+  deleteDepartment(id: string): Observable<void> {
+    return this.http.delete<void>(`/departments/${id}`);
+  }
 }
