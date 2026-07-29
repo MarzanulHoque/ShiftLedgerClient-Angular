@@ -1,0 +1,132 @@
+<div class="page-header">
+  <h2>Billing — All Bills</h2>
+  @if (isSuperAdmin) {
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Department: All</mat-label>
+      <mat-select [value]="departmentId()" (selectionChange)="onDepartmentChange($event.value)">
+        <mat-option [value]="null">All</mat-option>
+        @for (d of departmentsQuery.data(); track d.id) {
+          <mat-option [value]="d.id">{{ d.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+</div>
+
+<div class="stat-grid">
+  <app-stat-tile icon="description" color="steel" [label]="billsLabel" [value]="(billsQuery.data()?.totalCount ?? 0) + ''" />
+  <app-stat-tile icon="receipt_long" color="danger" label="Unpaid outstanding" [value]="money(unpaidTotal)" />
+  <app-stat-tile icon="receipt" color="success" label="Paid total" [value]="money(paidTotal)" />
+</div>
+
+@if (isSuperAdmin && summaryQuery.data(); as summary) {
+  @if (summary.length > 0) {
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th class="align-right">Bills</th>
+            <th class="align-right">Unpaid</th>
+            <th class="align-right">Paid</th>
+            <th class="align-right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of summary; track d.departmentId) {
+            <tr>
+              <td>{{ d.departmentName }}</td>
+              <td class="align-right">{{ d.totalCount }}</td>
+              <td class="align-right">{{ money(d.unpaidTotal) }}</td>
+              <td class="align-right">{{ money(d.paidTotal) }}</td>
+              <td class="align-right">{{ money(d.grandTotal) }}</td>
+            </tr>
+          }
+          <tr class="consolidated-row">
+            <td>Consolidated</td>
+            <td class="align-right">{{ sumField('totalCount') }}</td>
+            <td class="align-right">{{ money(sumField('unpaidTotal')) }}</td>
+            <td class="align-right">{{ money(sumField('paidTotal')) }}</td>
+            <td class="align-right">{{ money(sumField('grandTotal')) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+}
+
+<mat-button-toggle-group [value]="filter()" (change)="onFilterChange($event.value)">
+  <mat-button-toggle value="all">All</mat-button-toggle>
+  <mat-button-toggle value="unpaid">Unpaid</mat-button-toggle>
+  <mat-button-toggle value="paid">Paid</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div class="table-wrapper">
+  <table mat-table [dataSource]="billsQuery.data()?.rows ?? []">
+    <ng-container matColumnDef="billNumber">
+      <th mat-header-cell *matHeaderCellDef>Invoice #</th>
+      <td mat-cell *matCellDef="let row" class="mono">{{ formatBillNumber(row.billNumber) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="job">
+      <th mat-header-cell *matHeaderCellDef>Job</th>
+      <td mat-cell *matCellDef="let row" [class.dimmed]="row.jobDeleted">
+        {{ row.title }}
+        @if (!row.jobDeleted) {
+          <span class="dimmed mono job-number">{{ formatJobNumber(row.jobNumber) }}</span>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="bikeModel">
+      <th mat-header-cell *matHeaderCellDef>Bike model</th>
+      <td mat-cell *matCellDef="let row">{{ row.bikeModel }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="department">
+      <th mat-header-cell *matHeaderCellDef>Department</th>
+      <td mat-cell *matCellDef="let row">{{ departmentName(row.departmentId) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef>Total</th>
+      <td mat-cell *matCellDef="let row" class="mono">{{ money(row.total) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let row">
+        <span class="badge" [class]="row.isPaid ? 'badge--success' : 'badge--neutral'">{{ row.isPaid ? 'Paid' : 'Unpaid' }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="paidAt">
+      <th mat-header-cell *matHeaderCellDef>Paid at</th>
+      <td mat-cell *matCellDef="let row" class="mono">{{ row.paidAtUtc ? (row.paidAtUtc | utcDateTime) : '—' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: columns"
+      [class.clickable-row]="!row.jobDeleted"
+      (click)="openJob(row.jobId, row.jobDeleted)"
+    ></tr>
+  </table>
+
+  @if (billsQuery.isLoading()) {
+    <div class="loading"><mat-spinner diameter="32" /></div>
+  } @else if ((billsQuery.data()?.rows?.length ?? 0) === 0) {
+    <p class="empty">No bills match this filter.</p>
+  }
+</div>
+
+@if (billsQuery.data() && billsQuery.data()!.totalCount > pageSize) {
+  <mat-paginator
+    [length]="billsQuery.data()!.totalCount"
+    [pageSize]="pageSize"
+    [pageIndex]="page() - 1"
+    [hidePageSize]="true"
+    (page)="onPageEvent($event)"
+  />
+}

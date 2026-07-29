@@ -24,10 +24,7 @@ export const routes: Routes = [
       },
       {
         path: 'bills',
-        loadComponent: () =>
-          import('./shared/components/feature-placeholder/feature-placeholder.component').then(
-            (m) => m.FeaturePlaceholderComponent,
-          ),
+        loadComponent: () => import('./features/billing/pages/bills.page').then((m) => m.BillsPage),
         data: { title: 'Billing' },
       },
       {
