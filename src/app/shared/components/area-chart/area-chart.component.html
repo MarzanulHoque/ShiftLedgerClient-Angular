@@ -1,0 +1,28 @@
+<div class="area-chart" [style.height.px]="height">
+  <div class="y-axis">
+    <span>{{ valueFormatter(maxValue) }}</span>
+    <span>0</span>
+  </div>
+
+  <div class="plot">
+    <svg [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight" preserveAspectRatio="none" class="plot-svg">
+      <defs>
+        <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--mat-sys-primary, #1f4a72)" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="var(--mat-sys-primary, #1f4a72)" stop-opacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path [attr.d]="areaPath" fill="url(#areaFill)" stroke="none" />
+      <path [attr.d]="linePath" fill="none" stroke="var(--mat-sys-primary, #1f4a72)" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+      @for (m of markers; track m.label) {
+        <circle [attr.cx]="m.x" [attr.cy]="m.y" r="1.6" fill="var(--mat-sys-primary, #1f4a72)">
+          <title>{{ labelFormatter(m.label) }}: {{ valueFormatter(m.value) }}</title>
+        </circle>
+      }
+    </svg>
+    <div class="x-axis">
+      <span>{{ firstLabel }}</span>
+      <span>{{ lastLabel }}</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="donut-chart">
+  <svg [attr.width]="size" [attr.height]="size" viewBox="0 0 100 100">
+    <g transform="rotate(-90 50 50)">
+      <circle cx="50" cy="50" [attr.r]="radius" fill="none" stroke="var(--mat-sys-surface-variant, #eee)" [attr.stroke-width]="strokeWidth" />
+      @for (arc of arcs; track arc.label) {
+        <circle
+          cx="50"
+          cy="50"
+          [attr.r]="radius"
+          fill="none"
+          [attr.stroke]="arc.color"
+          [attr.stroke-width]="strokeWidth"
+          [attr.stroke-dasharray]="arc.dashArray"
+          [attr.stroke-dashoffset]="arc.dashOffset"
+        >
+          <title>{{ arc.label }}: {{ arc.value }}</title>
+        </circle>
+      }
+    </g>
+  </svg>
+
+  <ul class="donut-legend">
+    @for (arc of arcs; track arc.label) {
+      <li>
+        <span class="dot" [style.background]="arc.color"></span>
+        <span class="label">{{ arc.label }}</span>
+        <span class="value">{{ arc.value }}</span>
+      </li>
+    }
+  </ul>
+</div>
