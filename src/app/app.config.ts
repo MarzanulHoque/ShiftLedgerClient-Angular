@@ -10,6 +10,7 @@ import { API_BASE_URL, HUB_URL } from './core/http/api-config.token';
 import { apiPrefixInterceptor } from './core/http/api-prefix.interceptor';
 import { authTokenInterceptor } from './core/http/auth-token.interceptor';
 import { refreshInterceptor } from './core/http/refresh.interceptor';
+import { concurrencyInterceptor } from './core/http/concurrency.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,7 +20,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     { provide: API_BASE_URL, useValue: environment.apiBaseUrl },
     { provide: HUB_URL, useValue: environment.hubUrl },
-    provideHttpClient(withInterceptors([apiPrefixInterceptor, authTokenInterceptor, refreshInterceptor])),
+    provideHttpClient(
+      withInterceptors([apiPrefixInterceptor, authTokenInterceptor, refreshInterceptor, concurrencyInterceptor]),
+    ),
     provideTanStackQuery(
       new QueryClient({
         defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
